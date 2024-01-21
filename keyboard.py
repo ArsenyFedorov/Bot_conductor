@@ -20,6 +20,7 @@ def kb_sign_up_day():
     keyboard.button(text=friday, callback_data="day")
     keyboard.button(text=saturday, callback_data="day")
     keyboard.button(text=sunday, callback_data="day")
+    keyboard.button(text=major, callback_data="main")
     keyboard.adjust(2, 2, 2, 1)
     return keyboard.as_markup()
 
@@ -27,6 +28,8 @@ def kb_sign_up_day():
 def kb_schedule():
     keyboard = InlineKeyboardBuilder()
     keyboard.button(text=sign_up, callback_data="signUp")
+    keyboard.button(text=major, callback_data="main")
+    keyboard.adjust(1)
     return keyboard.as_markup()
 
 
@@ -36,5 +39,6 @@ def kb_setting():
     keyboard.button(text=dinner, callback_data="oclock")
     keyboard.button(text=day, callback_data="oclock")
     keyboard.button(text=evening, callback_data="oclock")
+    keyboard.button(text=major, callback_data="main")
     keyboard.adjust(2, 2)
     return keyboard.as_markup()
