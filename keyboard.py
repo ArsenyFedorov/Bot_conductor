@@ -1,5 +1,12 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.filters.callback_data import CallbackData
 from text import *
+
+
+class SimpleCallback(CallbackData, prefix="scb"):
+    callback: str = ""
+    day: int = 0
+    oclock: str = "2"
 
 
 def kb_start():
@@ -13,13 +20,13 @@ def kb_start():
 
 def kb_sign_up_day():
     keyboard = InlineKeyboardBuilder()
-    keyboard.button(text=monday, callback_data="day")
-    keyboard.button(text=tuesday, callback_data="day")
-    keyboard.button(text=wednesday, callback_data="day")
-    keyboard.button(text=thursday, callback_data="day")
-    keyboard.button(text=friday, callback_data="day")
-    keyboard.button(text=saturday, callback_data="day")
-    keyboard.button(text=sunday, callback_data="day")
+    keyboard.button(text=monday, callback_data=SimpleCallback(callback="day", day=0))
+    keyboard.button(text=tuesday, callback_data=SimpleCallback(callback="day", day=1))
+    keyboard.button(text=wednesday, callback_data=SimpleCallback(callback="day", day=2))
+    keyboard.button(text=thursday, callback_data=SimpleCallback(callback="day", day=3))
+    keyboard.button(text=friday, callback_data=SimpleCallback(callback="day", day=4))
+    keyboard.button(text=saturday, callback_data=SimpleCallback(callback="day", day=5))
+    keyboard.button(text=sunday, callback_data=SimpleCallback(callback="day", day=6))
     keyboard.button(text=major, callback_data="main")
     keyboard.adjust(2, 2, 2, 1)
     return keyboard.as_markup()
@@ -33,7 +40,7 @@ def kb_schedule():
     return keyboard.as_markup()
 
 
-def kb_setting():
+def kb_clock():
     keyboard = InlineKeyboardBuilder()
     keyboard.button(text=morning, callback_data="oclock")
     keyboard.button(text=dinner, callback_data="oclock")
@@ -41,4 +48,15 @@ def kb_setting():
     keyboard.button(text=evening, callback_data="oclock")
     keyboard.button(text=major, callback_data="main")
     keyboard.adjust(2, 2)
+    return keyboard.as_markup()
+
+
+def kb_error():
+    keyboard = InlineKeyboardBuilder()
+    keyboard.button(text=major, callback_data="main")
+
+
+def kb_main():
+    keyboard = InlineKeyboardBuilder()
+    keyboard.button(text=major, callback_data="main")
     return keyboard.as_markup()
