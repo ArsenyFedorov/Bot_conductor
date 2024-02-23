@@ -4,9 +4,9 @@ from text import *
 
 
 class SimpleCallback(CallbackData, prefix="scb"):
-    callback: str = ""
+    callback: str = " "
     day: int = 0
-    oclock: str = "2"
+    time: str = " "
 
 
 def kb_start():
@@ -40,12 +40,12 @@ def kb_schedule():
     return keyboard.as_markup()
 
 
-def kb_clock():
+def kb_clock(day_of_class: int = 0):
     keyboard = InlineKeyboardBuilder()
-    keyboard.button(text=morning, callback_data="oclock")
-    keyboard.button(text=dinner, callback_data="oclock")
-    keyboard.button(text=day, callback_data="oclock")
-    keyboard.button(text=evening, callback_data="oclock")
+    keyboard.button(text=morning, callback_data=SimpleCallback(callback="oclock", day=day_of_class, time="10"))
+    keyboard.button(text=dinner, callback_data=SimpleCallback(callback="oclock", day=day_of_class, time="13"))
+    keyboard.button(text=day, callback_data=SimpleCallback(callback="oclock", day=day_of_class, time="17"))
+    keyboard.button(text=evening, callback_data=SimpleCallback(callback="oclock", day=day_of_class, time="20"))
     keyboard.button(text=major, callback_data="main")
     keyboard.adjust(2, 2)
     return keyboard.as_markup()

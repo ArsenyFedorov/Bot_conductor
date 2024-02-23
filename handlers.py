@@ -12,6 +12,7 @@ handlers_router = Router()
 
 @handlers_router.message(Command("start"))
 async def com_start(message: Message, bot: Bot):
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     await bot.send_photo(chat_id=message.from_user.id,
                          photo="https://i.pinimg.com/550x/5e/e8/39/5ee839d9f00ad2d81ece2f1d5c30ae5e.jpg",
                          caption=greeting, reply_markup=kb_start())
@@ -93,7 +94,7 @@ async def day_class(callback: CallbackQuery, bot: Bot, callback_data: SimpleCall
                       "-yellow-color-morning-alarm-clock_124848-425.jpg",
                 caption=day_time
             ),
-            reply_markup=kb_clock())
+            reply_markup=kb_clock(day_of_class))
     # current_date = datetime.date.today()
     # print(current_date)
     # current_day = current_date.weekday()
@@ -103,8 +104,11 @@ async def day_class(callback: CallbackQuery, bot: Bot, callback_data: SimpleCall
     # wek = callback_data.day
 
 
-@handlers_router.callback_query(F.data == "oclock")
-async def oclock(callback: CallbackQuery, bot: Bot):
+@handlers_router.callback_query(SimpleCallback.filter(F.callback == "oclock"))
+async def oclock(callback: CallbackQuery, bot: Bot, callback_data: SimpleCallback):
+    time = callback_data.time
+    day_of_classe = callback_data.day
+    current_day = datetime.date.today().weekday()
     await bot.edit_message_media(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,

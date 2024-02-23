@@ -3,6 +3,7 @@ import os
 import asyncio
 from handlers import *
 from data_base.user import User
+from data_base.day_of_class import DayOfSport
 
 bot = Bot(os.getenv("TOKEN"))
 dp = Dispatcher()
@@ -15,7 +16,9 @@ def on_start():
     print("База данных", end=" ")
     try:
         User.great_table()
-        print("Подключено")
+        print("Подключено", end=" ")
+        DayOfSport.great_table()
+        print("и эта тоже")
     except:
         print("Не подключено")
 
