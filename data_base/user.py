@@ -9,16 +9,17 @@ class User(DataBase):
         if isinstance(data, Message):
             self.tg_id = data.from_user.id
             self.name = data.from_user.first_name
+            self.message_time = 0
             self.create()
         if isinstance(data, int):
             self.tg_id = data
         user = self.load(tg_id=self.tg_id)
-        self.tg_id, self.name = user
+        self.tg_id, self.name, self.message_time = user
 
     @staticmethod
     def great_table():
         sql = '''CREATE TABLE IF NOT EXISTS users
-                 (tg_id INTEGER, name TEXT)'''
+                 (tg_id INTEGER, name TEXT, message_time INTEGER)'''
         User.execute(sql, commit=True)
 
     def load(self, **kwargs):
@@ -39,5 +40,5 @@ class User(DataBase):
         if data:
             print("Такой пользователь уже есть ) ")
         else:
-            sql = """INSERT INTO users(tg_id,name) VALUES (?,?)"""
-            self.execute(sql, (self.tg_id, self.name), commit=True)
+            sql = """INSERT INTO users(tg_id,name,message_time) VALUES (?,?,?)"""
+            self.execute(sql, (self.tg_id, self.name, self.message_time), commit=True)

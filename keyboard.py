@@ -7,6 +7,8 @@ class SimpleCallback(CallbackData, prefix="scb"):
     callback: str = " "
     day: int = 0
     time: str = " "
+    status: str = " "
+    day_now: str = " "
 
 
 def kb_start():
@@ -40,7 +42,7 @@ def kb_schedule():
     return keyboard.as_markup()
 
 
-def kb_clock(day_of_class: int = 0):
+def kb_oclock(day_of_class: int = 0):
     keyboard = InlineKeyboardBuilder()
     keyboard.button(text=morning, callback_data=SimpleCallback(callback="oclock", day=day_of_class, time="10"))
     keyboard.button(text=dinner, callback_data=SimpleCallback(callback="oclock", day=day_of_class, time="13"))
@@ -48,6 +50,25 @@ def kb_clock(day_of_class: int = 0):
     keyboard.button(text=evening, callback_data=SimpleCallback(callback="oclock", day=day_of_class, time="20"))
     keyboard.button(text=major, callback_data="main")
     keyboard.adjust(2, 2)
+    return keyboard.as_markup()
+
+
+def kb_setting():
+    keyboard = InlineKeyboardBuilder()
+    keyboard.button(text=morning, callback_data=SimpleCallback(callback="setting", time="10"))
+    keyboard.button(text=dinner, callback_data=SimpleCallback(callback="setting", time="13"))
+    keyboard.button(text=day, callback_data=SimpleCallback(callback="setting", time="17"))
+    keyboard.button(text=evening, callback_data=SimpleCallback(callback="setting", time="20"))
+    keyboard.button(text=major, callback_data="main")
+    keyboard.adjust(2, 2)
+    return keyboard.as_markup()
+
+
+def kb_status(day_now):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.button(text=yes, callback_data=SimpleCallback(callback="status", status=yes, day_now=day_now))
+    keyboard.button(text=no, callback_data=SimpleCallback(callback="status", status=no, day_now=day_now))
+    keyboard.adjust(2)
     return keyboard.as_markup()
 
 

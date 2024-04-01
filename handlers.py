@@ -5,7 +5,9 @@ from aiogram.filters.callback_data import CallbackData
 from keyboard import *
 from text import *
 from data_base.user import User
+from data_base.day_of_class import DayOfSport
 import datetime
+import asyncio
 
 handlers_router = Router()
 
@@ -34,15 +36,28 @@ async def com_start(callback: CallbackQuery, bot: Bot):
 
 @handlers_router.callback_query(F.data == "signUp")
 async def sign_up(callback: CallbackQuery, bot: Bot):
-    await bot.edit_message_media(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.message_id,
-        media=InputMediaPhoto(
-            media="https://imageru.ru/uploads/posts/2016-05/1464711563_imageru.ru"
-                  "_business-men-psd.jpg",
-            caption=sign_up_text
-        ),
-        reply_markup=kb_sign_up_day())
+    user = User(callback.from_user.id)
+    if user.message_time == 0:
+        await bot.edit_message_media(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            media=InputMediaPhoto(
+                media="https://img.freepik.com/premium-vector/ringing-alarm-clock-with"
+                      "-two-bells-illustration-cartoon-isolated-dinamic-image-green-and"
+                      "-yellow-color-morning-alarm-clock_124848-425.jpg",
+                caption=alternative_setting_text
+            ),
+            reply_markup=kb_setting())
+    else:
+        await bot.edit_message_media(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            media=InputMediaPhoto(
+                media="https://imageru.ru/uploads/posts/2016-05/1464711563_imageru.ru"
+                      "_business-men-psd.jpg",
+                caption=sign_up_text
+            ),
+            reply_markup=kb_sign_up_day())
 
 
 @handlers_router.callback_query(F.data == "schedule")
@@ -68,7 +83,7 @@ async def setting(callback: CallbackQuery, bot: Bot):
                   "-yellow-color-morning-alarm-clock_124848-425.jpg",
             caption=setting_text
         ),
-        reply_markup=kb_clock())
+        reply_markup=kb_setting())
 
 
 @handlers_router.callback_query(SimpleCallback.filter(F.callback == "day"))
@@ -94,21 +109,73 @@ async def day_class(callback: CallbackQuery, bot: Bot, callback_data: SimpleCall
                       "-yellow-color-morning-alarm-clock_124848-425.jpg",
                 caption=day_time
             ),
-            reply_markup=kb_clock(day_of_class))
-    # current_date = datetime.date.today()
-    # print(current_date)
-    # current_day = current_date.weekday()
-    # print(current_day)
-    # data_list = datetime.date.today().isoformat().split("-")
-    # print(data_list)
-    # wek = callback_data.day
+            reply_markup=kb_oclock(day_of_class))
 
 
 @handlers_router.callback_query(SimpleCallback.filter(F.callback == "oclock"))
 async def oclock(callback: CallbackQuery, bot: Bot, callback_data: SimpleCallback):
-    time = callback_data.time
-    day_of_classe = callback_data.day
-    current_day = datetime.date.today().weekday()
+    day_sport = DayOfSport(callback)
+    flag = True
+    day_now = datetime.date.today()
+    while flag:
+        if callback_data.day == day_now.weekday():
+            day_sport.datetime = datetime.datetime(day_now.year, day_now.month, day_now.day,
+                                                   int(callback_data.time))
+            day_sport.save()
+            flag = False
+        else:
+            day_now += datetime.timedelta(days=1)
+    await bot.edit_message_media(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        media=InputMediaPhoto(
+            media="https://kartinki.pics/uploads/posts/2022-02/thumbs/1645072209_"
+                  "2-kartinkin-net-p-kartinki-bez-fona-dlya-prezentatsii-2.jpg",
+            caption=finish
+        ),
+        reply_markup=kb_main())
+    flag = True
+    user = User(callback.from_user.id)
+    while flag:
+        now = datetime.datetime.now()
+        if now.weekday() == callback_data.day and now.hour == user.message_time:
+            await bot.edit_message_media(
+                chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
+                media=InputMediaPhoto(
+                    media="https://uprostim.com/wp-content/uploads/2021/05/image183-1278x720.jpg",
+                    caption=message_text
+                ),
+                reply_markup=kb_status(day_sport.datetime))
+            today = datetime.datetime.now()
+            print(today)
+            flag = False
+        await asyncio.sleep(3_600)
+
+
+@handlers_router.callback_query(SimpleCallback.filter(F.callback == "setting"))
+async def setting_oclock(callback: CallbackQuery, bot: Bot, callback_data: SimpleCallback):
+    user = User(callback.from_user.id)
+    user.message_time = int(callback_data.time)
+    user.save()
+    await bot.edit_message_media(
+        chat_id=callback.message.chat.id,
+        message_id=callback.message.message_id,
+        media=InputMediaPhoto(
+            media="https://kartinki.pics/uploads/posts/2022-02/thumbs/1645072209_"
+                  "2-kartinkin-net-p-kartinki-bez-fona-dlya-prezentatsii-2.jpg",
+            caption=finish
+        ),
+        reply_markup=kb_main())
+
+
+@handlers_router.callback_query(SimpleCallback.filter(F.callback == "status"))
+async def choice_status(callback: CallbackQuery, bot: Bot, callback_data: SimpleCallback):
+    sport_day = DayOfSport(callback_data.day_now)
+    if callback_data.status == "yes":
+        sport_day.status = "Подтвержено"
+    else:
+        sport_day.status = "Отклонено"
     await bot.edit_message_media(
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
